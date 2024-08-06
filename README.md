@@ -48,3 +48,7 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+- imma kill myself lowkey, this makes me depressed i cant get a camera app running on my phone. this is the lowest i have been in yaers simply because of react-native. i have one person to blame. his name is abe didan. he makes me work like a slave on his halal app. while he is out drinking and smoking. he is in charge of frontend????? that means we will never get a UI out for a couple years. Can aj DO SOMETHING????????? he just sitting in the discord still thinking and getting a hard on for his olympics app!!!! WHERE IS SANDEEEEEEEEEEPPPPPPPPPPP. lol jk. :D 
+
+
