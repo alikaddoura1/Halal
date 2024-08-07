@@ -16,7 +16,8 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",
-    "@react-navigation/native": "^6.0.2",
+    "@react-navigation/bottom-tabs": "^6.6.1",
+    "@react-navigation/native": "^6.1.18",
     "expo": "~51.0.24",
     "expo-camera": "~15.0.14",
     "expo-constants": "~16.0.2",
