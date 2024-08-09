@@ -9,10 +9,15 @@ export default function Camera() {
     const [facing, setFacing] = useState('back');
     const [permission, requestPermission] = useCameraPermissions();
     const [image, setImage] = useState(null);
+    const cameraRef = useRef(null);
+
+    // Pop-Up related consts
     const [popupVisible, setPopupVisible] = useState(false); 
     const [isSuccess, setIsSuccess] = useState(true);
+    const [haramIngredient, setHaramIngredient] = useState('');
 
-    const cameraRef = useRef(null);
+
+    
   
     if (!permission) {
       return <View />;
@@ -39,7 +44,21 @@ export default function Camera() {
         console.log(" worked")
 
         const randomOutcome = Math.random() > 0.5;
-        setIsSuccess(randomOutcome);
+        let foundHaramIngredient;
+
+        if (randomOutcome) {
+          foundHaramIngredient = 'Gelatin';
+        } else {
+          foundHaramIngredient = null;
+        }
+
+        if (foundHaramIngredient) {
+          setIsSuccess(false);
+          setHaramIngredient(foundHaramIngredient);
+        } else {
+          setIsSuccess(true);
+          setHaramIngredient('');
+        }
 
         setPopupVisible(true);
       } else {
@@ -69,7 +88,7 @@ export default function Camera() {
         </CameraView>
 
         <Modal
-        animationType="slide"
+        animationType="fade"
         transparent={true}
         visible={popupVisible}
         onRequestClose={closePopup}
@@ -88,6 +107,7 @@ export default function Camera() {
                   <MaterialCommunityIcons name="check" size={50} color="white" />
                 </View>
                 <Text style={styles.popupText}>Halal</Text>
+                <Text style={styles.popupSubText}>No Haram ingredients were found</Text>
               </View>
             ) : (
               <View style={styles.iconContainer}>
@@ -95,6 +115,7 @@ export default function Camera() {
                   <Entypo name="cross" size={50} color="white" />
                 </View>
                 <Text style={styles.popupText}>Haram</Text>
+                <Text style={styles.popupSubText}>{haramIngredient} was found making this food item Haram</Text>
               </View>
             )}
           </View>
@@ -179,5 +200,9 @@ export default function Camera() {
     popupText: {
       fontSize: 20,
     },
+    popupSubText: {
+      fontSize: 12,
+      marginTop: 10,
+      textAlign: 'center',
+    },  
   });
-
