@@ -1,5 +1,5 @@
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View, SafeAreaView } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Entypo from '@expo/vector-icons/Entypo';
@@ -9,6 +9,7 @@ export default function Camera() {
     const [facing, setFacing] = useState('back');
     const [permission, requestPermission] = useCameraPermissions();
     const [image, setImage] = useState(null);
+    const cameraRef = useRef(null);
   
     if (!permission) {
       return <View />;
@@ -27,14 +28,21 @@ export default function Camera() {
       setFacing(current => (current === 'back' ? 'front' : 'back'));
     }
 
-    function takePicture(){
-
+    async function takePicture() {
+      if (cameraRef.current) {
+        const photo = await cameraRef.current.takePictureAsync();
+        setImage(photo.uri);
+        console.log(photo.uri); 
+        console.log(" worked")
+      } else {
+        console.log("didnt work")
+      }
+      
     }
   
     return (
       <View style={styles.container}>
-        <CameraView style={styles.camera} facing={facing}>
-
+        <CameraView style={styles.camera} facing={facing} ref = {cameraRef}>
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
               <MaterialCommunityIcons name='camera-flip-outline' color="white" size={40}/>

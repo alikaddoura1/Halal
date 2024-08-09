@@ -1,13 +1,38 @@
 import * as React from 'react';
-import { Text, View, TextInput, StyleSheet } from 'react-native';
+import { Text, View, TextInput, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';  // Ensure this is installed
 
 export default function Finder() {
   const [searchText, setSearchText] = React.useState('');
+  const [filteredData, setFilteredData] = React.useState([]);
+  
+  const data = [
+    'Rice Crispies',
+    'Rice Cakes',
+    'Ricotta Cheese',
+    'Rice Pudding',
+    'Rich Tea Biscuits',
+    'Riced Cauliflower',
+    // Add more items here
+  ];
 
-  const handleFocus = () => {
-    setSearchText('');  // Clear the text when the input is focused
+  const handleSearch = (text) => {
+    setSearchText(text);
+    if (text) {
+      const filtered = data.filter(item =>
+        item.toLowerCase().startsWith(text.toLowerCase())
+      );
+      setFilteredData(filtered);
+    } else {
+      setFilteredData([]);
+    }
   };
+
+  const renderSuggestion = ({ item }) => (
+    <TouchableOpacity onPress={() => setSearchText(item)}>
+      <Text style={styles.suggestionItem}>{item}</Text>
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.container}>
@@ -15,13 +40,23 @@ export default function Finder() {
         <FontAwesome name="search" size={20} color="purple" style={styles.searchIcon} />
         <TextInput
           placeholder="Search"
-          placeholderTextColor="gray"  // Ensures the placeholder is visible in gray
+          placeholderTextColor="gray"
           value={searchText}
-          onFocus={handleFocus}  // Clears the text when input is focused
-          onChangeText={text => setSearchText(text)}
+          onFocus={() => setSearchText('')}
+          onChangeText={text => handleSearch(text)}
           style={styles.searchInput}
         />
       </View>
+      
+      {filteredData.length > 0 && (
+        <FlatList
+          data={filteredData}
+          renderItem={renderSuggestion}
+          keyExtractor={(item) => item}
+          style={styles.suggestionsContainer}
+        />
+      )}
+      
       <Text>Home!</Text>
     </View>
   );
@@ -30,10 +65,10 @@ export default function Finder() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-start',  // Align items to the top
+    justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: '#fff',
-    paddingTop: 40,  // Adjusted to move the search bar further to the top
+    paddingTop: 40,
   },
   searchContainer: {
     flexDirection: 'row',
@@ -42,7 +77,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     width: '90%',
     height: 40,
-    marginBottom: 20,
+    marginBottom: 10,
     paddingHorizontal: 10,
   },
   searchIcon: {
@@ -50,6 +85,18 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    color: 'black',  // Sets the font color to black
+    color: 'black',
+  },
+  suggestionsContainer: {
+    width: '90%',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    marginTop: 5,
+    padding: 10,
+  },
+  suggestionItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
   },
 });

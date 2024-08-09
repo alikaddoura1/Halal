@@ -3,9 +3,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-
 import Finder from './screens/Finder';
 import Camera from './screens/Camera';
+
 
 
 const Tab = createMaterialBottomTabNavigator();
