@@ -1,6 +1,6 @@
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useState, useRef } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View, SafeAreaView } from 'react-native';
+import { Button, StyleSheet, Text, TouchableOpacity, View, SafeAreaView, Modal } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Entypo from '@expo/vector-icons/Entypo';
 
@@ -9,6 +9,9 @@ export default function Camera() {
     const [facing, setFacing] = useState('back');
     const [permission, requestPermission] = useCameraPermissions();
     const [image, setImage] = useState(null);
+    const [popupVisible, setPopupVisible] = useState(false); 
+    const [isSuccess, setIsSuccess] = useState(true);
+
     const cameraRef = useRef(null);
   
     if (!permission) {
@@ -34,10 +37,18 @@ export default function Camera() {
         setImage(photo.uri);
         console.log(photo.uri); 
         console.log(" worked")
+
+        const randomOutcome = Math.random() > 0.5;
+        setIsSuccess(randomOutcome);
+
+        setPopupVisible(true);
       } else {
         console.log("didnt work")
       }
-      
+    }
+
+    function closePopup() {
+      setPopupVisible(false);
     }
   
     return (
@@ -56,6 +67,39 @@ export default function Camera() {
           </View>
           
         </CameraView>
+
+        <Modal
+        animationType="slide"
+        transparent={true}
+        visible={popupVisible}
+        onRequestClose={closePopup}
+      >
+        <View style={styles.popupOverlay}>
+          <View style={styles.popup}>
+            {/* 'X' Button to Close Popup */}
+            <TouchableOpacity style={styles.closeButton} onPress={closePopup}>
+              <Entypo name="cross" size={30} color="black" />
+            </TouchableOpacity>
+
+            {/* Conditional rendering based on success or failure */}
+            {isSuccess ? (
+              <View style={styles.iconContainer}>
+                <View style={styles.successIcon}>
+                  <MaterialCommunityIcons name="check" size={50} color="white" />
+                </View>
+                <Text style={styles.popupText}>Halal</Text>
+              </View>
+            ) : (
+              <View style={styles.iconContainer}>
+                <View style={styles.failureIcon}>
+                  <Entypo name="cross" size={50} color="white" />
+                </View>
+                <Text style={styles.popupText}>Haram</Text>
+              </View>
+            )}
+          </View>
+        </View>
+      </Modal>
       </View>
     );
   }
@@ -89,6 +133,51 @@ export default function Camera() {
       fontSize: 24,
       fontWeight: 'bold',
       color: 'white',
+    },
+    popupOverlay: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    popup: {
+      width: 300,
+      height: 200,
+      backgroundColor: 'white',
+      borderRadius: 10,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 20,
+    },
+    closeButton: {
+      position: 'absolute',
+      top: 10,
+      right: 10,
+    },
+    iconContainer: {
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    successIcon: {
+      width: 70,
+      height: 70,
+      borderRadius: 35,
+      backgroundColor: 'green',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: 10,
+    },
+    failureIcon: {
+      width: 70,
+      height: 70,
+      borderRadius: 35,
+      backgroundColor: 'red',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: 10,
+    },
+    popupText: {
+      fontSize: 20,
     },
   });
 
