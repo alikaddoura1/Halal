@@ -3,144 +3,193 @@ import { useState, useRef } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View, SafeAreaView, Modal, Image } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Entypo from '@expo/vector-icons/Entypo';
+import axios from 'axios';
+import { GOOGLE_VISION_API_KEY } from '@env';
 
+
+const VISION_API_URL = `https://vision.googleapis.com/v1/images:annotate?key=${GOOGLE_VISION_API_KEY}`;
+
+const haramIngredients = [
+  "gelatin",
+  "lard",
+  "pork",
+  "alcohol",
+  "vanilla extract (if alcohol-based)",
+  "casein (if derived from non-halal milk)",
+  "rennet (if derived from non-halal animals)",
+  "carmine (E120)",
+  "tallow",
+  "anchovy paste",
+  "shellfish",
+  "certain emulsifiers (like E471, if animal-derived)",
+];
 
 export default function Camera() {
-    const [facing, setFacing] = useState('back');
-    const [permission, requestPermission] = useCameraPermissions();
-    const [image, setImage] = useState(null);
-    const cameraRef = useRef(null);
-    const [confirmingImage, setConfirmingImage] = useState(false);
+  const [facing, setFacing] = useState('back');
+  const [permission, requestPermission] = useCameraPermissions();
+  const [image, setImage] = useState(null);
+  const [confirmingImage, setConfirmingImage] = useState(false);
+  const [popupVisible, setPopupVisible] = useState(false); 
+  const [isSuccess, setIsSuccess] = useState(true);
+  const [haramIngredient, setHaramIngredient] = useState('');
+  const cameraRef = useRef(null);
+  const [extractedText, setExtractedText] = useState('');
 
-    // Pop-Up related consts
-    const [popupVisible, setPopupVisible] = useState(false); 
-    const [isSuccess, setIsSuccess] = useState(true);
-    const [haramIngredient, setHaramIngredient] = useState('');
-  
-    if (!permission) {
-      return <View />;
-    }
-  
-    if (!permission.granted) {
-      return (
-        <SafeAreaView style={styles.container}>
-          <Text style={styles.message}>We need your permission to show the camera</Text>
-          <Button onPress={requestPermission} title="grant permission" />
-        </SafeAreaView>
-      );
-    }
-  
-    function toggleCameraFacing() {
-      setFacing(current => (current === 'back' ? 'front' : 'back'));
-    }
+  if (!permission) {
+    return <View />;
+  }
 
-    async function takePicture() {
-      if (cameraRef.current) {
-        const photo = await cameraRef.current.takePictureAsync();
-        setImage(photo.uri);
-        setConfirmingImage(true);
-      } else {
-        console.log("didnt work")
-      }
-    }
-
-    function acceptPicture() {
-      setConfirmingImage(false);
-      const randomOutcome = Math.random() > 0.5;
-      let foundHaramIngredient;
-
-      if (randomOutcome) {
-        foundHaramIngredient = 'Gelatin';
-      } else {
-        foundHaramIngredient = null;
-      }
-
-      if (foundHaramIngredient) {
-        setIsSuccess(false);
-        setHaramIngredient(foundHaramIngredient);
-      } else {
-        setIsSuccess(true);
-        setHaramIngredient('');
-      }
-
-      setPopupVisible(true);
-    }
-
-    function retakePicture() {
-      setImage(null);
-      setConfirmingImage(false);
-    }
-
-    function closePopup() {
-      setPopupVisible(false);
-    }
-  
+  if (!permission.granted) {
     return (
-      <View style={styles.container}>
-        {!confirmingImage ? (
-          <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-                <MaterialCommunityIcons name='camera-flip-outline' color="white" size={40}/>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.captureContainer}>
-              <TouchableOpacity style={styles.button} onPress={takePicture}>
-                <Entypo name='circle' color="white" size={100}/>
-              </TouchableOpacity>
-            </View>
-          </CameraView>
-        ) : (
-          <View style={styles.confirmationContainer}>
-            <Image source={{ uri: image }} style={styles.capturedImage} />
-            <View style={styles.confirmationButtons}>
-              <TouchableOpacity style={styles.circleButton} onPress={retakePicture}>
-                <Entypo name="cross" size={35} color="white" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.circleButton} onPress={acceptPicture}>
-                <MaterialCommunityIcons name="check-bold" size={30} color="white" />
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={popupVisible}
-          onRequestClose={closePopup}
-        >
-          <View style={styles.popupOverlay}>
-            <View style={styles.popup}>
-              {/* 'X' Button to Close Popup */}
-              <TouchableOpacity style={styles.closeButton} onPress={closePopup}>
-                <Entypo name="cross" size={30} color="black" />
-              </TouchableOpacity>
-
-              {/* Conditional rendering based on success or failure */}
-              {isSuccess ? (
-                <View style={styles.iconContainer}>
-                  <View style={styles.successIcon}>
-                    <MaterialCommunityIcons name="check" size={50} color="white" />
-                  </View>
-                  <Text style={styles.popupText}>Halal</Text>
-                  <Text style={styles.popupSubText}>No Haram ingredients were found</Text>
-                </View>
-              ) : (
-                <View style={styles.iconContainer}>
-                  <View style={styles.failureIcon}>
-                    <Entypo name="cross" size={50} color="white" />
-                  </View>
-                  <Text style={styles.popupText}>Haram</Text>
-                  <Text style={styles.popupSubText}>{haramIngredient} was found making this food item Haram</Text>
-                </View>
-              )}
-            </View>
-          </View>
-        </Modal>
-      </View>
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.message}>We need your permission to show the camera</Text>
+        <Button onPress={requestPermission} title="grant permission" />
+      </SafeAreaView>
     );
+  }
+
+  function toggleCameraFacing() {
+    setFacing(current => (current === 'back' ? 'front' : 'back'));
+  }
+
+  async function takePicture() {
+    if (cameraRef.current) {
+      const photo = await cameraRef.current.takePictureAsync();
+      setImage(photo.uri);
+      console.log(photo.uri);
+      setConfirmingImage(true);
+    } else {
+      console.log("didn't work");
+    }
+  }
+
+  async function analyzeImage(uri) {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    reader.onloadend = async () => {
+      const base64data = reader.result.split(',')[1];
+
+      try {
+        const result = await axios.post(VISION_API_URL, {
+          requests: [
+            {
+              image: {
+                content: base64data,
+              },
+              features: [
+                {
+                  type: 'TEXT_DETECTION',
+                },
+              ],
+            },
+          ],
+        });
+
+        const detectedText = result.data.responses[0].fullTextAnnotation.text;
+        console.log('Detected text:', detectedText);
+        setExtractedText(detectedText);
+        checkForHaramIngredients(detectedText);
+      } catch (error) {
+        console.error('Error analyzing image:', error);
+      }
+    };
+  }
+
+  function checkForHaramIngredients(text) {
+    const foundHaramIngredients = haramIngredients.filter(ingredient => text.toLowerCase().includes(ingredient.toLowerCase()));
+    
+    if (foundHaramIngredients.length > 0) {
+      setIsSuccess(false);
+      setHaramIngredient(foundHaramIngredients[0]); 
+    } else {
+      setIsSuccess(true);
+      setHaramIngredient('');
+    }
+
+    setPopupVisible(true);
+  }
+
+  function acceptPicture() {
+    setConfirmingImage(false);
+    analyzeImage(image); // Process the image after confirmation
+  }
+
+  function retakePicture() {
+    setImage(null);
+    setConfirmingImage(false);
+    setPopupVisible(false); 
+  }
+
+  function closePopup() {
+    setPopupVisible(false);
+  }
+
+  return (
+    <View style={styles.container}>
+      {!confirmingImage ? (
+        <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
+              <MaterialCommunityIcons name='camera-flip-outline' color="white" size={40}/>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.captureContainer}>
+            <TouchableOpacity style={styles.button} onPress={takePicture}>
+              <Entypo name='circle' color="white" size={100}/>
+            </TouchableOpacity>
+          </View>
+        </CameraView>
+      ) : (
+        <View style={styles.confirmationContainer}>
+          <Image source={{ uri: image }} style={styles.capturedImage} />
+          <View style={styles.confirmationButtons}>
+            <TouchableOpacity style={styles.circleButton} onPress={retakePicture}>
+              <Entypo name="cross" size={35} color="white" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.circleButton} onPress={acceptPicture}>
+              <MaterialCommunityIcons name="check-bold" size={30} color="white" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={popupVisible}
+        onRequestClose={closePopup}
+      >
+        <View style={styles.popupOverlay}>
+          <View style={styles.popup}>
+            <TouchableOpacity style={styles.closeButton} onPress={closePopup}>
+              <Entypo name="cross" size={30} color="black" />
+            </TouchableOpacity>
+
+            {isSuccess ? (
+              <View style={styles.iconContainer}>
+                <View style={styles.successIcon}>
+                  <MaterialCommunityIcons name="check" size={50} color="white" />
+                </View>
+                <Text style={styles.popupText}>Halal</Text>
+                <Text style={styles.popupSubText}>No Haram ingredients were found</Text>
+              </View>
+            ) : (
+              <View style={styles.iconContainer}>
+                <View style={styles.failureIcon}>
+                  <Entypo name="cross" size={50} color="white" />
+                </View>
+                <Text style={styles.popupText}>Haram</Text>
+                <Text style={styles.popupSubText}>{haramIngredient} was found making this food item Haram</Text>
+              </View>
+            )}
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

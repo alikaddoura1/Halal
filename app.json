@@ -1,6 +1,5 @@
 {
   "expo": {
-   
     "name": "Halal",
     "slug": "Halal",
     "version": "1.0.0",
@@ -17,13 +16,19 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSCameraUsageDescription": "We need access to your camera for taking pictures."
-      }
+      },
+      "bundleIdentifier": "com.ios"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.android"
     },
     "web": {
       "bundler": "metro",
