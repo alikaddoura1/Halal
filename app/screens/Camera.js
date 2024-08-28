@@ -1,11 +1,10 @@
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useState, useRef } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View, SafeAreaView, Modal, Image } from 'react-native';
+import { Button, StyleSheet, Text, TouchableOpacity, View, SafeAreaView, Modal, Image, ActivityIndicator } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Entypo from '@expo/vector-icons/Entypo';
 import axios from 'axios';
 import { GOOGLE_VISION_API_KEY } from '@env';
-
 
 const VISION_API_URL = `https://vision.googleapis.com/v1/images:annotate?key=${GOOGLE_VISION_API_KEY}`;
 
@@ -14,14 +13,14 @@ const haramIngredients = [
   "lard",
   "pork",
   "alcohol",
-  "vanilla extract (if alcohol-based)",
-  "casein (if derived from non-halal milk)",
-  "rennet (if derived from non-halal animals)",
-  "carmine (E120)",
+  "vanilla extract",
+  "casein",
+  "rennet",
+  "carmine ",
   "tallow",
   "anchovy paste",
   "shellfish",
-  "certain emulsifiers (like E471, if animal-derived)",
+  "certain emulsifiers",
 ];
 
 export default function Camera() {
@@ -32,6 +31,7 @@ export default function Camera() {
   const [popupVisible, setPopupVisible] = useState(false); 
   const [isSuccess, setIsSuccess] = useState(true);
   const [haramIngredient, setHaramIngredient] = useState('');
+  const [loading, setLoading] = useState(false);
   const cameraRef = useRef(null);
   const [extractedText, setExtractedText] = useState('');
 
@@ -64,6 +64,7 @@ export default function Camera() {
   }
 
   async function analyzeImage(uri) {
+    setLoading(true);
     const response = await fetch(uri);
     const blob = await response.blob();
     const reader = new FileReader();
@@ -93,6 +94,8 @@ export default function Camera() {
         checkForHaramIngredients(detectedText);
       } catch (error) {
         console.error('Error analyzing image:', error);
+      } finally {
+        setLoading(false);
       }
     };
   }
@@ -153,6 +156,13 @@ export default function Camera() {
               <MaterialCommunityIcons name="check-bold" size={30} color="white" />
             </TouchableOpacity>
           </View>
+        </View>
+      )}
+
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#ffffff" />
+          <Text style={styles.loadingText}>Analyzing...</Text>
         </View>
       )}
 
@@ -294,5 +304,20 @@ const styles = StyleSheet.create({
     borderRadius: 30, // Makes the button circular
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  loadingText: {
+    marginTop: 10,
+    color: '#ffffff',
+    fontSize: 18,
   },
 });
