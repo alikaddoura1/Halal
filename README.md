@@ -1,52 +1,33 @@
-# Welcome to your Expo app 👋
+Halal Food Checker 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
-## Get started
+Overview
+Halal Food Checker is a React Native app designed to help users quickly determine the halal status of food items. Using the Google Vision API, the app provides real-time Optical Character Recognition (OCR) to analyze food labels and detect haram ingredients. The app also features a comprehensive snack lookup, allowing users to verify the halal status of over 1,000 snacks.
 
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
-
+Features
+Real-Time OCR Scanning: Uses Google Vision API to scan food labels and detect haram ingredients instantly.
+Instant Halal Status Feedback: Provides immediate feedback on the halal validity of a product based on its ingredients.
+Snack Lookup Feature: Enables users to search for and check the halal status of over 1,000 specific snacks, ensuring quick and reliable information.
+Tech Stack
+JavaScript
+React Native
+Google Vision API
+Installation
+Clone the repository:
+bash
+Copy code
+git clone https://github.com/alikaddoura1/Halal.git
+Install dependencies:
+bash
+Copy code
+cd Halal
+npm install
+Start the development server:
+bash
+Copy code
+npx expo start
+Usage
+Open the app on your device or emulator.
+Use the camera to scan a food label for real-time halal status checking.
+Alternatively, use the search function to look up a specific snack and verify its halal status. code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
