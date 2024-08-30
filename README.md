@@ -11,17 +11,22 @@ Snack Lookup Feature: Allows users to search and check the halal status of over 
 # 🛠️ Tech Stack
 
 JavaScript
+
 React Native
+
 Google Vision API
 
 # 🚀 Installation
 
 To run the app locally, follow these steps:
 
-Clone the repository: git clone https://github.com/alikaddoura1/Halal.git
-Navigate to the project directory: cd Halal
-Install dependencies: npm install
-Start the development server: npx expo start
+**Clone the repository:** git clone https://github.com/alikaddoura1/Halal.git
+
+**Navigate to the project directory:** cd Halal
+
+**Install dependencies:** npm install
+
+**Start the development server:** npx expo start
 
 # 📱 Usage
 
